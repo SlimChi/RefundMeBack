@@ -14,23 +14,10 @@ class UserType extends AbstractType
     {
         $builder
             ->add('email')
-            ->add('roles')
-            ->add('password')
             ->add('firstName')
             ->add('lastName')
             ->add('phone')
             ->add('dateOfBirth');
-        $builder->get('roles')
-            ->addModelTransformer(new CallbackTransformer(
-                function ($rolesArray) {
-                    // transform the array to a string
-                    return count($rolesArray) ? $rolesArray[0] : null;
-                },
-                function ($rolesString) {
-                    // transform the string back to an array
-                    return [$rolesString];
-                }
-            ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
