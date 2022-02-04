@@ -2,33 +2,46 @@
 
 namespace App\Entity;
 
-use App\Repository\AdressRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AdressRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdressRepository::class)]
+#[ApiResource(
+              normalizationContext: ['groups' => ['adress_read']],
+              denormalizationContext: ['groups' => ['adress_write']],
+              )]
 class Adress
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups("adress_read")]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["adress_read","adress_write"])]
     private $country;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["adress_read","adress_write"])]
     private $city;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(["adress_read","adress_write"])]
     private $postCode;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["adress_read","adress_write"])]
     private $street;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(["adress_read","adress_write"])]
     private $num_street;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(["adress_read","adress_write"])]
     private $additional_street;
 
     public function getId(): ?int
