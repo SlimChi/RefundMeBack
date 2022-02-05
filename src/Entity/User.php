@@ -2,42 +2,56 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user_read']],
+    denormalizationContext: ['groups' => ['user_write']],
+    )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups("user_read")]
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[Groups(["user_read","user_write"])]
     private $email;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(["user_read","user_write"])]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
+    #[Groups(["user_read","user_write"])]
     private $password;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["user_read","user_write"])]
     private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["user_read","user_write"])]
     private $lastName;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(["user_read","user_write"])]
     private $phone;
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(["user_read","user_write"])]
     private $dateOfBirth;
 
     public function getId(): ?int

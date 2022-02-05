@@ -2,22 +2,31 @@
 
 namespace App\Entity;
 
-use App\Repository\FactureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\FactureRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FactureRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['facture_read']],
+    denormalizationContext: ['groups' => ['facture_write']],
+    )]
 class Facture
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups("facture_read")]
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    private $number_product;
+    #[Groups(["facture_read","facture_write"])]
+    private $numberProduct;
 
     #[ORM\Column(type: 'float')]
-    private $total_price;
+    #[Groups(["facture_read","facture_write"])]
+    private $totalPrice;
 
     public function getId(): ?int
     {
@@ -26,24 +35,24 @@ class Facture
 
     public function getNumberProduct(): ?int
     {
-        return $this->number_product;
+        return $this->numberProduct;
     }
 
-    public function setNumberProduct(int $number_product): self
+    public function setNumberProduct(int $numberProduct): self
     {
-        $this->number_product = $number_product;
+        $this->numberProduct = $numberProduct;
 
         return $this;
     }
 
     public function getTotalPrice(): ?float
     {
-        return $this->total_price;
+        return $this->totalPrice;
     }
 
-    public function setTotalPrice(float $total_price): self
+    public function setTotalPrice(float $totalPrice): self
     {
-        $this->total_price = $total_price;
+        $this->totalPrice = $totalPrice;
 
         return $this;
     }

@@ -2,32 +2,44 @@
 
 namespace App\Entity;
 
-use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\OrderRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
+#[ApiResource(
+    normalizationContext: ['groups' => ['order_read']],
+    denormalizationContext: ['groups' => ['order_write']],
+    )]
 class Order
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups("order_read")]
     private $id;
 
     #[ORM\Column(type: 'datetime')]
-    private $order_date;
+    #[Groups(["order_read","order_write"])]
+    private $orderDate;
 
     #[ORM\Column(type: 'integer')]
-    private $number_product;
+    #[Groups(["order_read","order_write"])]
+    private $numberProduct;
 
     #[ORM\Column(type: 'boolean')]
-    private $is_sent;
+    #[Groups(["order_read","order_write"])]
+    private $isSent;
 
     #[ORM\Column(type: 'float')]
-    private $total_price;
+    #[Groups(["order_read","order_write"])]
+    private $totalPrice;
 
     #[ORM\Column(type: 'datetime')]
-    private $shipp_date;
+    #[Groups(["order_read","order_write"])]
+    private $shippDate;
 
     public function getId(): ?int
     {
@@ -36,60 +48,60 @@ class Order
 
     public function getOrderDate(): ?\DateTimeInterface
     {
-        return $this->order_date;
+        return $this->orderDate;
     }
 
-    public function setOrderDate(\DateTimeInterface $order_date): self
+    public function setOrderDate(\DateTimeInterface $orderDate): self
     {
-        $this->order_date = $order_date;
+        $this->orderDate = $orderDate;
 
         return $this;
     }
 
     public function getNumberProduct(): ?int
     {
-        return $this->number_product;
+        return $this->numberProduct;
     }
 
-    public function setNumberProduct(int $number_product): self
+    public function setNumberProduct(int $numberProduct): self
     {
-        $this->number_product = $number_product;
+        $this->numberProduct = $numberProduct;
 
         return $this;
     }
 
     public function getIsSent(): ?bool
     {
-        return $this->is_sent;
+        return $this->isSent;
     }
 
-    public function setIsSent(bool $is_sent): self
+    public function setIsSent(bool $isSent): self
     {
-        $this->is_sent = $is_sent;
+        $this->isSent = $isSent;
 
         return $this;
     }
 
     public function getTotalPrice(): ?float
     {
-        return $this->total_price;
+        return $this->totalPrice;
     }
 
-    public function setTotalPrice(float $total_price): self
+    public function setTotalPrice(float $totalPrice): self
     {
-        $this->total_price = $total_price;
+        $this->totalPrice = $totalPrice;
 
         return $this;
     }
 
     public function getShippDate(): ?\DateTimeInterface
     {
-        return $this->shipp_date;
+        return $this->shippDate;
     }
 
-    public function setShippDate(\DateTimeInterface $shipp_date): self
+    public function setShippDate(\DateTimeInterface $shippDate): self
     {
-        $this->shipp_date = $shipp_date;
+        $this->shippDate = $shippDate;
 
         return $this;
     }

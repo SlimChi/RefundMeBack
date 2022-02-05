@@ -36,13 +36,15 @@ class Adress
     #[Groups(["adress_read","adress_write"])]
     private $street;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255)]
     #[Groups(["adress_read","adress_write"])]
-    private $num_street;
+    private $streetNum;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(["adress_read","adress_write"])]
-    private $additional_street;
+    private $additionalStreet;
+
+   
 
     public function getId(): ?int
     {
@@ -97,26 +99,26 @@ class Adress
         return $this;
     }
 
-    public function getNumStreet(): ?string
+    public function getAdditionalStreet(): ?string
     {
-        return $this->num_street;
+        return $this->additionalStreet;
     }
 
-    public function setNumStreet(string $num_street): self
+    public function setAdditionalStreet(?string $additionalStreet): self
     {
-        $this->num_street = $num_street;
+        $this->additionalStreet = $additionalStreet;
 
         return $this;
     }
 
-    public function getAdditionalStreet(): ?string
+    public function getStreetNum(): ?string
     {
-        return $this->additional_street;
+        return $this->streetNum;
     }
 
-    public function setAdditionalStreet(?string $additional_street): self
+    public function setStreetNum(string $streetNum): self
     {
-        $this->additional_street = $additional_street;
+        $this->streetNum = $streetNum;
 
         return $this;
     }
