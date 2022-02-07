@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProductRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -43,6 +45,14 @@ class Product
     #[ORM\Column(type: 'integer')]
     #[Groups(["product_read","product_write"])]
     private $stockProduct;
+
+    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: 'products')]
+    private $image;
+
+    public function __construct()
+    {
+        $this->image = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -117,6 +127,30 @@ class Product
     public function setStockProduct(int $stockProduct): self
     {
         $this->stockProduct = $stockProduct;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Image[]
+     */
+    public function getImage(): Collection
+    {
+        return $this->image;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->image->contains($image)) {
+            $this->image[] = $image;
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        $this->image->removeElement($image);
 
         return $this;
     }

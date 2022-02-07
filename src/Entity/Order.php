@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\OrderRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -40,6 +42,17 @@ class Order
     #[ORM\Column(type: 'datetime')]
     #[Groups(["order_read","order_write"])]
     private $shippDate;
+
+    #[ORM\OneToMany(mappedBy: 'orders', targetEntity: User::class)]
+    private $users;
+
+    #[ORM\OneToOne(targetEntity: Facture::class, cascade: ['persist', 'remove'])]
+    private $facture;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -102,6 +115,48 @@ class Order
     public function setShippDate(\DateTimeInterface $shippDate): self
     {
         $this->shippDate = $shippDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setOrders($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getOrders() === $this) {
+                $user->setOrders(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getFacture(): ?Facture
+    {
+        return $this->facture;
+    }
+
+    public function setFacture(?Facture $facture): self
+    {
+        $this->facture = $facture;
 
         return $this;
     }

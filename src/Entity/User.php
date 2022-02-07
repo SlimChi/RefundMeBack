@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -53,6 +55,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'date', nullable: true)]
     #[Groups(["user_read","user_write"])]
     private $dateOfBirth;
+
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'users')]
+    private $orders;
+
+    #[ORM\ManyToMany(targetEntity: Adress::class, inversedBy: 'users')]
+    private $Adresses;
+
+    public function __construct()
+    {
+        $this->Adresses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -174,5 +187,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString()
     {
         return $this->lastName . ' ' . $this->firstName;
+    }
+
+    public function getOrders(): ?Order
+    {
+        return $this->orders;
+    }
+
+    public function setOrders(?Order $orders): self
+    {
+        $this->orders = $orders;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Adress[]
+     */
+    public function getAdresses(): Collection
+    {
+        return $this->Adresses;
+    }
+
+    public function addAdress(Adress $adress): self
+    {
+        if (!$this->Adresses->contains($adress)) {
+            $this->Adresses[] = $adress;
+        }
+
+        return $this;
+    }
+
+    public function removeAdress(Adress $adress): self
+    {
+        $this->Adresses->removeElement($adress);
+
+        return $this;
     }
 }
