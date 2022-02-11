@@ -2,34 +2,60 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['product_read']],
+    denormalizationContext: ['groups' => ['product_write']],
+)]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups("product_read")]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["product_read", "product_write"])]
     private $titleProduct;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["product_read", "product_write"])]
     private $description;
 
     #[ORM\Column(type: 'float')]
+    #[Groups(["product_read", "product_write"])]
     private $price;
 
     #[ORM\Column(type: 'boolean')]
-    private $is_available;
+    #[Groups(["product_read", "product_write"])]
+    private $isAvailable;
 
     #[ORM\Column(type: 'boolean')]
+    #[Groups(["product_read", "product_write"])]
     private $packaging;
 
     #[ORM\Column(type: 'integer')]
-    private $stock_product;
+    #[Groups(["product_read", "product_write"])]
+    private $stockProduct;
+
+    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: 'products')]
+    private $image;
+
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'products')]
+    private $Orders;
+
+    public function __construct()
+    {
+        $this->image = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,12 +100,12 @@ class Product
 
     public function getIsAvailable(): ?bool
     {
-        return $this->is_available;
+        return $this->isAvailable;
     }
 
-    public function setIsAvailable(bool $is_available): self
+    public function setIsAvailable(bool $isAvailable): self
     {
-        $this->is_available = $is_available;
+        $this->isAvailable = $isAvailable;
 
         return $this;
     }
@@ -98,13 +124,53 @@ class Product
 
     public function getStockProduct(): ?int
     {
-        return $this->stock_product;
+        return $this->stockProduct;
     }
 
-    public function setStockProduct(int $stock_product): self
+    public function setStockProduct(int $stockProduct): self
     {
-        $this->stock_product = $stock_product;
+        $this->stockProduct = $stockProduct;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Image[]
+     */
+    public function getImage(): Collection
+    {
+        return $this->image;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->image->contains($image)) {
+            $this->image[] = $image;
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        $this->image->removeElement($image);
+
+        return $this;
+    }
+
+    public function getOrders(): ?Order
+    {
+        return $this->Orders;
+    }
+
+    public function setOrders(?Order $Orders): self
+    {
+        $this->Orders = $Orders;
+
+        return $this;
+    }
+    public function __toString()
+    {
+        return $this->titleProduct;
     }
 }

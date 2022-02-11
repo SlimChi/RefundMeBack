@@ -2,34 +2,59 @@
 
 namespace App\Entity;
 
-use App\Repository\AdressRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AdressRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdressRepository::class)]
+#[ApiResource(
+              normalizationContext: ['groups' => ['adress_read']],
+              denormalizationContext: ['groups' => ['adress_write']],
+              )]
 class Adress
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups("adress_read")]
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["adress_read","adress_write"])]
     private $country;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["adress_read","adress_write"])]
     private $city;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(["adress_read","adress_write"])]
     private $postCode;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(["adress_read","adress_write"])]
     private $street;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $num_street;
+    #[Groups(["adress_read","adress_write"])]
+    private $streetNum;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $additional_street;
+    #[Groups(["adress_read","adress_write"])]
+    private $additionalStreet;
+
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'Adresses')]
+    private $users;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
+
+   
 
     public function getId(): ?int
     {
@@ -84,26 +109,53 @@ class Adress
         return $this;
     }
 
-    public function getNumStreet(): ?string
+    public function getAdditionalStreet(): ?string
     {
-        return $this->num_street;
+        return $this->additionalStreet;
     }
 
-    public function setNumStreet(string $num_street): self
+    public function setAdditionalStreet(?string $additionalStreet): self
     {
-        $this->num_street = $num_street;
+        $this->additionalStreet = $additionalStreet;
 
         return $this;
     }
 
-    public function getAdditionalStreet(): ?string
+    public function getStreetNum(): ?string
     {
-        return $this->additional_street;
+        return $this->streetNum;
     }
 
-    public function setAdditionalStreet(?string $additional_street): self
+    public function setStreetNum(string $streetNum): self
     {
-        $this->additional_street = $additional_street;
+        $this->streetNum = $streetNum;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addAdress($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeAdress($this);
+        }
 
         return $this;
     }
